@@ -32,11 +32,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             options: MapOptions(
               initialCenter: _initialCenter,
               initialZoom: 13.0,
+              interactionOptions: const InteractionOptions(
+                flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+              ),
             ),
             children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'com.example.ecopulse',
+                keepBuffer: 2,
+                panBuffer: 1,
               ),
               // Marcadores carregados da API
               MarkerLayer(
@@ -56,12 +61,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ...occurrences.map((occ) {
                     return Marker(
                       point: LatLng(occ.latitude, occ.longitude),
-                      width: 40,
-                      height: 40,
-                      child: const Icon(
-                        Icons.location_on,
-                        color: AppTheme.alertRed, // TODO: usar cor baseada na categoria
-                        size: 40,
+                      width: 36,
+                      height: 36,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: occ.severityColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: occ.severityColor.withOpacity(0.35),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          occ.categoryIcon,
+                          color: Colors.white,
+                          size: 18,
+                        ),
                       ),
                     );
                   }).toList(),
@@ -193,39 +212,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       const SizedBox(width: 12),
                       // Card Ocorrências
                       Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: const [
-                                      Icon(Icons.location_on, color: AppTheme.textSecondary, size: 16),
-                                      SizedBox(width: 4),
-                                      Text('Ocorrências\npróximas', style: TextStyle(fontSize: 10, color: AppTheme.textSecondary)),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  const Text('5', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
-                                  const Text('nas últimas 24h', style: TextStyle(fontSize: 10, color: AppTheme.textSecondary)),
-                                ],
-                              ),
-                              const Icon(Icons.chevron_right, color: AppTheme.textSecondary),
-                            ],
+                        child: InkWell(
+                          onTap: () {
+                            ref.read(navigationIndexProvider.notifier).setIndex(2); // Aba Alertas
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: const [
+                                        Icon(Icons.location_on, color: AppTheme.textSecondary, size: 16),
+                                        SizedBox(width: 4),
+                                        Text('Ocorrências\npróximas', style: TextStyle(fontSize: 10, color: AppTheme.textSecondary)),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text('${occurrences.length}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary)),
+                                    const Text('nas últimas 24h', style: TextStyle(fontSize: 10, color: AppTheme.textSecondary)),
+                                  ],
+                                ),
+                                const Icon(Icons.chevron_right, color: AppTheme.textSecondary),
+                              ],
+                            ),
                           ),
                         ),
                       ),
