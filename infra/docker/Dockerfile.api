@@ -1,0 +1,22 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies (PostGIS requires libpq-dev, etc.)
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+
+# Install dependencies (removing h3 if it fails, but keeping it in the Dockerfile if possible)
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# Set python path
+ENV PYTHONPATH=/app
+
+RUN chmod +x /app/scripts/entrypoint.sh
+CMD ["/app/scripts/entrypoint.sh"]
