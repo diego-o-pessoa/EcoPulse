@@ -1,4 +1,5 @@
 import asyncio
+# pyrefly: ignore[missing-import]
 import aio_pika
 import json
 import logging
@@ -10,6 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 from shared.config import settings
 from shared.database import AsyncSessionLocal
 from shared.models import Occurrence, OccurrenceStatusEnum
+# pyrefly: ignore[missing-import]
 from sqlalchemy.future import select
 
 logging.basicConfig(level=logging.INFO)
@@ -54,6 +56,7 @@ async def process_message(message: aio_pika.IncomingMessage):
                     logger.info(f"Occurrence {client_event_id} saved to DB.")
                     
                     # Invalidate cache
+                    # pyrefly: ignore[missing-import]
                     import redis.asyncio as redis
                     redis_client = redis.from_url(settings.REDIS_URL)
                     # Apagar chaves baseadas em raio pode ser complexo sem KEYS, simplificamos apagando padrão ou no get.

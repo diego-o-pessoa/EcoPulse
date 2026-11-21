@@ -36,8 +36,9 @@ services:
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 5s
-      timeout: 5s
-      retries: 5
+      timeout: 10s
+      retries: 20
+      start_period: 30s
     networks:
       - ecopulse_net
 
@@ -58,7 +59,7 @@ services:
     networks:
       - ecopulse_net
 
-  # Object Storage (Opcional, para simular S3)
+  # Object Storage (Para simular S3)
   minio:
     image: quay.io/minio/minio:RELEASE.2023-11-20T22-40-07Z
     container_name: ecopulse-minio

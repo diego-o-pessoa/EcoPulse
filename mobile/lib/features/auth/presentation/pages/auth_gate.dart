@@ -12,7 +12,7 @@ class AuthGate extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
 
-    if (authState.isLoading) {
+    if (authState.isInitialCheck) {
       return const Scaffold(
         backgroundColor: AppTheme.background,
         body: Center(

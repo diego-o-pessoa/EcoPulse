@@ -9,11 +9,13 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 class AuthState {
+  final bool isInitialCheck;
   final bool isLoading;
   final UserModel? user;
   final String? error;
 
   const AuthState({
+    this.isInitialCheck = false,
     this.isLoading = false,
     this.user,
     this.error,
@@ -22,11 +24,13 @@ class AuthState {
   bool get isAuthenticated => user != null;
 
   AuthState copyWith({
+    bool? isInitialCheck,
     bool? isLoading,
     UserModel? user,
     String? error,
   }) {
     return AuthState(
+      isInitialCheck: isInitialCheck ?? this.isInitialCheck,
       isLoading: isLoading ?? this.isLoading,
       user: user ?? this.user,
       error: error,
@@ -38,16 +42,16 @@ class AuthNotifier extends Notifier<AuthState> {
   @override
   AuthState build() {
     checkAuthStatus();
-    return const AuthState(isLoading: true);
+    return const AuthState(isInitialCheck: true);
   }
 
   Future<void> checkAuthStatus() async {
     final repo = ref.read(authRepositoryProvider);
     final user = await repo.getMe();
     if (user != null) {
-      state = state.copyWith(isLoading: false, user: user, error: null);
+      state = state.copyWith(isInitialCheck: false, isLoading: false, user: user, error: null);
     } else {
-      state = const AuthState(isLoading: false);
+      state = const AuthState(isInitialCheck: false, isLoading: false);
     }
   }
 

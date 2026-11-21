@@ -29,10 +29,13 @@ class AuthRepository {
     try {
       final response = await _dio.post(
         '/auth/login',
-        data: FormData.fromMap({
-          'username': email, // OAuth2 espera username
+        data: {
+          'username': email,
           'password': password,
-        }),
+        },
+        options: Options(
+          contentType: Headers.formUrlEncodedContentType,
+        ),
       );
 
       if (response.statusCode == 200) {
